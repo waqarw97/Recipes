@@ -1,26 +1,71 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Register</title>
-</head>
-<body>
-    <h1>Account</h1>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Account</h1>
 
-    <h2>Registration</h2>
-    <form action="#" method="get">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required><br>
-        
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
+        <h2>Registration</h2>
+        <form id="registerForm">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="username" required><br>
 
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
 
-        <label for="confirm-password">Confirm Password:</label><br>
-        <input type="password" id="confirm-password" name="confirm-password" required><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required><br>
 
-        <input type="submit" value="Register">
-    </form>
+            <label for="confirm-password">Confirm Password:</label><br>
+            <input type="password" id="confirm-password" name="confirm-password" required><br>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <script>
+            //adds event listener for the submit button
+            document.getElementById('registerForm').addEventListener('submit', function(event) {
+            //prevents form from submitting in the default way
+            event.preventDefault();
+            //event.target refers to the form that was submitted
+            let form = event.target;
+            //takes values from the form fields and creates an object called formData
+            let formData = {
+                username: form.username.value,
+                email: form.email.value,
+                password: form.password.value
+            };
+
+            // Check if password and confirm password fields match
+            if(form.password.value !== form['confirm-password'].value) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            //sends a post request to the /register route on the server
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    // This tells the server that the body of the request will be in JSON format.
+                    'Content-Type': 'application/json'
+                },
+                // This converts the JavaScript object to a JSON string.
+                body: JSON.stringify(formData)
+            }).then(function(response) {
+                // This function runs after the server has responded to the request.
+                // If the server sent back an error status, this throws an error.
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                window.location.href = '/success.html';
+            }).catch(function(error) {
+                console.log(error);
+            });
+            });
+        </script>
 </body>
 </html>
+

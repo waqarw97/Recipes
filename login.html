@@ -7,7 +7,7 @@
     <h1>Account</h1>
 
     <h2>Sign In</h2>
-    <form action="#" method="get">
+    <form id="loginForm">
         <label for="email">Username or Email:</label><br>
         <input type="text" id="email" name="email" required><br>
 
@@ -16,7 +16,40 @@
 
         <a href="#">Forgot login info?</a><br>
 
-        <input type="submit" value="Sign In">
+        <button type="submit">Sign In</button>
     </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            //prevents default event from happening
+            event.preventDefault();
+    
+            let form = event.target;
+            let formData = {
+                username: form.email.value,
+                password: form.password.value
+            };
+    
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            }).then(function(response) {
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                window.location.href = '/success.html';
+            }).catch(function(error) {
+                // Log the error to the console for debugging
+                console.error(error);
+
+                // Show an alert to the user
+                alert('Failed to login. Please check your username/email and password and try again.');
+            });
+        });
+    </script>
 </body>
 </html>
+
