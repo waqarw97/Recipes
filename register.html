@@ -1,71 +1,114 @@
 <!DOCTYPE html>
 <html>
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Register</title>
-    </head>
-    <body>
-        <h1>Account</h1>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Account</h1>
 
-        <h2>Registration</h2>
-        <form id="registerForm">
-            <label for="name">Name:</label><br>
-            <input type="text" id="name" name="username" required><br>
+    <h2>Registration</h2>
+    <!-- Begin form -->
+    <form id="registerForm">
+        <!-- Input fields for user information -->
+        <!-- Label for name field -->
+        <label for="name">Name:</label><br>
+        <!-- Text field for name -->
+        <input type="text" id="name" name="username" required><br>
 
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br>
+        <!-- Label for email field -->
+        <label for="email">Email:</label><br>
+        <!-- Email field for email -->
+        <input type="email" id="email" name="email" required><br>
 
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password" required><br>
+        <!-- Label for password field -->
+        <label for="password">Password:</label><br>
+        <!-- Password field for password -->
+        <input type="password" id="password" name="password" required><br>
 
-            <label for="confirm-password">Confirm Password:</label><br>
-            <input type="password" id="confirm-password" name="confirm-password" required><br>
+        <!-- Label for confirm password field -->
+        <label for="confirm-password">Confirm Password:</label><br>
+        <!-- Password field for confirming password -->
+        <input type="password" id="confirm-password" name="confirm-password" required><br>
 
-            <button type="submit">Register</button>
-        </form>
+        <!-- Feedback message area -->
+        <div id="message"></div>
 
-        <script>
-            //adds event listener for the submit button
-            document.getElementById('registerForm').addEventListener('submit', function(event) {
-            //prevents form from submitting in the default way
+        <!-- Submit button for the form -->
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        // Get the form element by its ID
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            // Prevent the form from submitting normally
             event.preventDefault();
-            //event.target refers to the form that was submitted
+
+            // Get the form that was submitted
             let form = event.target;
-            //takes values from the form fields and creates an object called formData
+
+            // Create an object from the form data
             let formData = {
                 username: form.username.value,
                 email: form.email.value,
                 password: form.password.value
             };
 
-            // Check if password and confirm password fields match
+            // Check if the password and confirmation password match
             if(form.password.value !== form['confirm-password'].value) {
+                // If not, alert the user and stop processing
                 alert("Passwords do not match.");
                 return;
             }
 
-            //sends a post request to the /register route on the server
+            // Check if the password meets the requirements
+            // The requirements are: minimum eight characters, at least one uppercase letter, one lowercase letter and one number
+            var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+            if (!passwordRegex.test(form.password.value)) {
+                // If the password does not meet the requirements, alert the user and stop processing
+                alert("Password must have minimum eight characters, at least one uppercase letter, one lowercase letter and one number.");
+                return;
+            }
+
+            // Show a loading message to the user
+            document.getElementById('message').textContent = 'Registering...';
+
+            // Send a POST request to the /register endpoint with the form data
             fetch('/register', {
                 method: 'POST',
                 headers: {
-                    // This tells the server that the body of the request will be in JSON format.
+                    // Tell the server we are sending JSON data
                     'Content-Type': 'application/json'
                 },
-                // This converts the JavaScript object to a JSON string.
+                // Convert the form data object to a JSON string
                 body: JSON.stringify(formData)
-            }).then(function(response) {
-                // This function runs after the server has responded to the request.
-                // If the server sent back an error status, this throws an error.
+            })
+            // When we get a response from the server
+            .then(function(response) {
+                // If the response is not ok (status code is not in the 200-299 range)
                 if (!response.ok) {
-                    throw new Error('HTTP error ' + response.status);
+                    // Parse the response body as text and return a promise that resolves to the parsed text
+                    // We do this because the server sends error messages as plain text
+                    return response.text().then(message => {
+                        // Throw an error with the parsed text message, or if that is undefined, throw an error with the status code
+                        throw new Error(message || 'HTTP error ' + response.status);
+                    });
                 }
+
+                // If the response is ok, redirect to the success page
                 window.location.href = '/success.html';
-            }).catch(function(error) {
+            })
+            // If an error occurs during the request
+            .catch(function(error) {
+                // Log the error to the console
                 console.log(error);
+
+                // Show the error message to the user
+                document.getElementById('message').textContent = error.message;
             });
-            });
-        </script>
+        });
+    </script>
 </body>
 </html>
+
+
 

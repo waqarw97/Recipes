@@ -7,49 +7,78 @@
     <h1>Account</h1>
 
     <h2>Sign In</h2>
+    <!-- Begin form -->
     <form id="loginForm">
+        <!-- Label for email field -->
         <label for="email">Username or Email:</label><br>
+        <!-- Text field for email -->
         <input type="text" id="email" name="email" required><br>
 
+        <!-- Label for password field -->
         <label for="password">Password:</label><br>
+        <!-- Password field for password -->
         <input type="password" id="password" name="password" required><br>
 
+        <!-- Link for users who forgot their login info -->
         <a href="#">Forgot login info?</a><br>
+        <!-- Feedback message area -->
+        <div id="message"></div>
 
+        <!-- Submit button for the form -->
         <button type="submit">Sign In</button>
     </form>
 
     <script>
+        // Get the form element by its ID
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            //prevents default event from happening
+            // Prevent the form from submitting normally
             event.preventDefault();
-    
+
+            // Get the form that was submitted
             let form = event.target;
+
+            // Create an object from the form data
             let formData = {
                 username: form.email.value,
                 password: form.password.value
             };
-    
+
+            // Show a loading message to the user
+            document.getElementById('message').textContent = 'Logging in...';
+
+            // Send a POST request to the /login endpoint with the form data
             fetch('/login', {
                 method: 'POST',
                 headers: {
+                    // Tell the server we are sending JSON data
                     'Content-Type': 'application/json'
                 },
+                // Convert the form data object to a JSON string
                 body: JSON.stringify(formData)
-            }).then(function(response) {
+            })
+            // When we get a response from the server
+            .then(function(response) {
+                // If the response is not ok (status code is not in the 200-299 range)
                 if (!response.ok) {
+                    // Throw an error with the status code
                     throw new Error('HTTP error ' + response.status);
                 }
+
+                // If the response is ok, redirect to the success page
                 window.location.href = '/success.html';
-            }).catch(function(error) {
-                // Log the error to the console for debugging
+            })
+            // If an error occurs during the request
+            .catch(function(error) {
+                // Log the error to the console
                 console.error(error);
 
-                // Show an alert to the user
-                alert('Failed to login. Please check your username/email and password and try again.');
+                // Show an error message to the user
+                document.getElementById('message').textContent = 'Failed to login. Please check your username/email and password and try again.';
             });
         });
     </script>
 </body>
 </html>
+
+
 
