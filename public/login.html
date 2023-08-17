@@ -54,7 +54,8 @@
                     'Content-Type': 'application/json'
                 },
                 // Convert the form data object to a JSON string
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
+                credentials: 'include'   // This line is added to include cookies in request
             })
             // When we get a response from the server
             .then(function(response) {
@@ -79,6 +80,7 @@
     </script>
 </body>
 </html>
+
 
 
 

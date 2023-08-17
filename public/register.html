@@ -26,9 +26,9 @@
         <input type="password" id="password" name="password" required><br>
 
         <!-- Label for confirm password field -->
-        <label for="confirm-password">Confirm Password:</label><br>
+        <label for="passwordConfirmation">Confirm Password:</label><br>
         <!-- Password field for confirming password -->
-        <input type="password" id="confirm-password" name="confirm-password" required><br>
+        <input type="password" id="passwordConfirmation" name="passwordConfirmation" required><br>
 
         <!-- Feedback message area -->
         <div id="message"></div>
@@ -50,11 +50,12 @@
             let formData = {
                 username: form.username.value,
                 email: form.email.value,
-                password: form.password.value
+                password: form.password.value,
+                passwordConfirmation: form.passwordConfirmation.value
             };
 
             // Check if the password and confirmation password match
-            if(form.password.value !== form['confirm-password'].value) {
+            if(form.password.value !== form.passwordConfirmation.value) {
                 // If not, alert the user and stop processing
                 alert("Passwords do not match.");
                 return;
@@ -79,6 +80,8 @@
                     // Tell the server we are sending JSON data
                     'Content-Type': 'application/json'
                 },
+                // Include credentials in the request
+                credentials: 'include',
                 // Convert the form data object to a JSON string
                 body: JSON.stringify(formData)
             })
@@ -103,12 +106,14 @@
                 console.log(error);
 
                 // Show the error message to the user
-                document.getElementById('message').textContent = error.message;
+                document.getElementById('message').textContent = error.message.includes('Password confirmation does not match password') ? 'Passwords don\'t match' : error.message;
             });
         });
     </script>
 </body>
 </html>
+
+
 
 
 
